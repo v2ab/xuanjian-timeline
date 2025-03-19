@@ -1,3 +1,16 @@
+<!-- 
+ 本文件创建了一个家族历史时间线展示页面，用于展示家族的历史事件, 以及重要人物
+ 主要功能包括：
+ 1. 创建交互式家族历史时间轴，直观展示家族大事件发展脉络
+ 2. 支持按事件重要性（重大/中等/小型）进行筛选和切换显示
+ 3. 展示每个历史时期的家族成员详情，包括姓名、生卒年份、年龄和简介
+ 4. 时间轴上的时间跳跃功能，优雅处理年代间长时间间隔
+ 5. 响应式设计，自适应不同屏幕尺寸，提供良好的移动端体验
+ 6. 提供时间标尺刻度，方便查看年份
+ 7. 支持点击事件展开/折叠详情，以及批量操作所有事件
+ 
+-->
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -25,34 +38,47 @@
       color: #2c3e50;
       text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
     }
+    
     .toggle-buttons {
       text-align: center;
       margin-bottom: 30px;
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 15px;
     }
     .toggle-buttons button {
-      background: #3498db;
-      color: #fff;
+      background: #f5f7fa;
+      color: #95a5a6;
       border: none;
-      padding: 10px 15px;
-      border-radius: 30px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
       cursor: pointer;
-      font-size: 15px;
-      font-weight: 500;
+      font-size: 18px;
       transition: all 0.3s ease;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      min-width: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .toggle-buttons button:hover { 
-      background: #2980b9; 
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
     .toggle-buttons button:active {
       transform: translateY(0);
+    }
+    .toggle-buttons button.active {
+      color: #3498db;
+      background: #e3f2fd;
+    }
+    .toggle-buttons button#toggleAll {
+      color: #27ae60;
+      background: #e8f5e9;
+    }
+    .toggle-buttons button#toggleAll:hover {
+      background: #c8e6c9;
     }
     /* 时间线容器 */
     .timeline-container {
@@ -68,7 +94,7 @@
       bottom: 0;
       left: 120px;
       width: 4px;
-      background: linear-gradient(to bottom, #3498db, #9b59b6);
+      background: #3498db;
       border-radius: 2px;
     }
     /* 每个事件项：左右分区 */
@@ -246,7 +272,7 @@
       position: absolute;
       left: 120px;
       width: 4px;
-      background: linear-gradient(to bottom, #3498db, #9b59b6);
+      background: #3498db;
       border-radius: 2px;
     }
     .gap .break-indicator {
@@ -374,44 +400,17 @@
         max-width: 150px;
       }
     }
-    /* 时间标尺样式 */
-    .time-ruler {
-      position: absolute;
-      left: 0;
-      width: 100%;
-      z-index: 1;
-      pointer-events: none;
-      height: 100%;
-    }
-    .ruler-mark {
-      position: absolute;
-      display: flex;
-      align-items: center;
-      left: 120px;
-      transform: translateX(-50%);
-    }
-    .ruler-mark::before {
-      content: '';
-      width: 8px;
-      height: 1px;
-      background-color: rgba(0,0,0,0.2);
-    }
-    .ruler-year {
-      font-size: 10px;
-      color: rgba(0,0,0,0.3);
-      margin-left: 4px;
-      font-family: 'Noto Sans SC', sans-serif;
-      font-weight: 300;
-    }
+    /* 时间标尺样式 - 已移除 */
   </style>
 </head>
 <body>
   <h2>家族历史时间线</h2>
+  
   <div class="toggle-buttons">
-    <button id="toggleBig">切换重大事件</button>
-    <button id="toggleMedium">切换中等事件</button>
-    <button id="toggleSmall">切换小型事件</button>
-    <button id="toggleAll">全部展开/折叠</button>
+    <button id="toggleBig" title="切换重大事件"><i class="fas fa-star"></i></button>
+    <button id="toggleMedium" title="切换中等事件"><i class="fas fa-bookmark"></i></button>
+    <button id="toggleSmall" title="切换小型事件"><i class="fas fa-circle"></i></button>
+    <button id="toggleAll" title="全部展开/折叠"><i class="fas fa-expand-alt"></i></button>
   </div>
   <div class="timeline-container" id="timelineContainer"></div>
   
@@ -631,6 +630,25 @@
         item.element.dataset.expanded = (!allExpanded).toString();
         updateEventDisplay(item.element, type);
       });
+      
+      // 更新按钮状态
+      updateToggleButtonState(type, !allExpanded);
+    }
+    
+    // 更新切换按钮的状态
+    function updateToggleButtonState(type, isActive) {
+      const buttonMap = {
+        "big": "toggleBig",
+        "medium": "toggleMedium",
+        "small": "toggleSmall"
+      };
+      
+      const button = document.getElementById(buttonMap[type]);
+      if (isActive) {
+        button.classList.add('active');
+      } else {
+        button.classList.remove('active');
+      }
     }
     
     // 绑定顶部按钮的批量切换功能
@@ -673,78 +691,22 @@
       }
     });
     
-    // 生成时间标尺
-    function generateTimeRuler() {
-      // 找出最早和最晚年份
-      const minYear = Math.min(...events.map(e => e.year));
-      const maxYear = Math.max(...events.map(e => e.year));
-      
-      // 计算标尺起始年份（向下取整到最接近的5的倍数）
-      const startYear = Math.floor(minYear / rulerStep) * rulerStep;
-      // 计算标尺结束年份（向上取整到最接近的5的倍数）
-      const endYear = Math.ceil(maxYear / rulerStep) * rulerStep;
-      
-      // 创建标尺容器
-      const rulerContainer = document.createElement('div');
-      rulerContainer.classList.add('time-ruler');
-      
-      // 储存事件年份和位置的映射
-      const yearPositions = new Map();
-      
-      // 首先将所有事件的年份和位置加入映射
-      events.forEach((event, index) => {
-        const eventElement = eventElements[index].element;
-        const rect = eventElement.getBoundingClientRect();
-        const timelineRect = timelineContainer.getBoundingClientRect();
-        yearPositions.set(event.year, rect.top - timelineRect.top + 20); // 20px offset为标题中心位置
+    // 初始化按钮状态
+    function initToggleButtonStates() {
+      ["big", "medium", "small"].forEach(type => {
+        const items = eventElements.filter(item => item.type === type);
+        const allExpanded = items.every(item => item.element.dataset.expanded === "true");
+        updateToggleButtonState(type, allExpanded);
       });
-      
-      // 生成标尺刻度
-      let currentY = 0;
-      for (let year = startYear; year <= endYear; year += rulerStep) {
-        // 如果是事件年份，使用事件的位置
-        if (yearPositions.has(year)) {
-          currentY = yearPositions.get(year);
-        } else {
-          // 找到最近的两个年份
-          const years = Array.from(yearPositions.keys()).sort((a, b) => a - b);
-          const prevYear = years.filter(y => y < year).pop();
-          const nextYear = years.find(y => y > year);
-          
-          // 如果没有前一年或后一年，跳过（只标注事件发生的年份及其之间的规则刻度）
-          if (!prevYear || !nextYear) continue;
-          
-          // 如果年份之间的跨度超过阈值，跳过（这是时间跳跃区间）
-          if (nextYear - prevYear > gapThreshold) continue;
-          
-          // 在相邻事件之间使用线性插值计算位置
-          const progress = (year - prevYear) / (nextYear - prevYear);
-          const prevY = yearPositions.get(prevYear);
-          const nextY = yearPositions.get(nextYear);
-          currentY = prevY + progress * (nextY - prevY);
-        }
-        
-        // 创建标尺刻度
-        const mark = document.createElement('div');
-        mark.classList.add('ruler-mark');
-        mark.style.top = `${currentY}px`;
-        
-        // 添加年份文本
-        const yearText = document.createElement('span');
-        yearText.classList.add('ruler-year');
-        yearText.textContent = year;
-        
-        mark.appendChild(yearText);
-        rulerContainer.appendChild(mark);
-      }
-      
-      // 将标尺添加到时间线容器
-      timelineContainer.prepend(rulerContainer);
     }
     
-    // 页面完全加载后生成时间标尺
+    // 页面完全加载后的初始化
     window.addEventListener('load', function() {
-      generateTimeRuler();
+      // 移除时间标尺的生成
+      // generateTimeRuler(); 
+      
+      // 初始化按钮状态
+      initToggleButtonStates();
     });
   </script>
 </body>
