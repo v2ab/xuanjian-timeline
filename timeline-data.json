@@ -1,0 +1,24 @@
+{
+  "events": [
+    { "year": 1800, "label": "家族创立", "description": "家族的起源，在小村庄中萌芽。", "type": "major" },
+    { "year": 1805, "label": "早期发展", "description": "家族开始在本地区小有名气。", "type": "minor" },
+    { "year": 1810, "label": "地区扩张", "description": "家族影响力逐渐扩大。", "type": "medium" },
+    { "year": 1850, "label": "迁移至新大陆", "description": "为追求更好的生活，家族大举移民新大陆。", "type": "major" },
+    { "year": 1860, "label": "建立小作坊", "description": "家族在新大陆建立了第一家作坊。", "type": "minor" },
+    { "year": 1900, "label": "成立企业", "description": "家族创立了现代企业，迈入工业时代。", "type": "major" },
+    { "year": 1905, "label": "技术革新", "description": "企业进行了重大技术革新。", "type": "medium" },
+    { "year": 1950, "label": "家族改革", "description": "面对时代变革，家族进行了深层次改革。", "type": "major" },
+    { "year": 2000, "label": "全球扩张", "description": "家族企业进入全球市场，实现跨国经营。", "type": "major" }
+  ],
+  
+  "familyMembers": [
+    { "id": 1, "name": "张远山", "birthYear": 1780, "deathYear": 1860, "description": "家族创始人，具有远见卓识" },
+    { "id": 2, "name": "张明德", "birthYear": 1800, "deathYear": 1875, "description": "第二代族长，带领家族走向繁荣" },
+    { "id": 3, "name": "张立业", "birthYear": 1830, "deathYear": 1905, "description": "企业家，家族企业创始人" },
+    { "id": 4, "name": "张世华", "birthYear": 1860, "deathYear": 1940, "description": "工业革命时期的领导者" },
+    { "id": 5, "name": "张天明", "birthYear": 1890, "deathYear": 1980, "description": "现代企业管理的奠基人" },
+    { "id": 6, "name": "张志远", "birthYear": 1920, "deathYear": 2005, "description": "家族改革的主要推动者" },
+    { "id": 7, "name": "张沛然", "birthYear": 1950, "deathYear": null, "description": "全球化战略的制定者" },
+    { "id": 8, "name": "张明轩", "birthYear": 1975, "deathYear": null, "description": "现任家族企业CEO" }
+  ]
+}
